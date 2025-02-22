@@ -1,0 +1,54 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+.menu-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    font-size: 24px;
+    background: #333;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 250px;
+    height: 100%;
+    background: #2d2d2d;
+    transition: 0.3s;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+}
+
+.sidebar.active {
+    right: 0;
+}
+
+.auth-section input, .auth-section button {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: none;
+    border-radius: 4px;
+}
+
+.auth-section button {
+    background: #6441a5; /* Twitch Purple */
+    color: white;
+    cursor: pointer;
+}
+
+.user-info {
+    margin-top: 20px;
+}

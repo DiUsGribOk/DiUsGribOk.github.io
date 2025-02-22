@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitch Bot Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Кнопка меню -->
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+
+    <!-- Боковое меню -->
+    <div class="sidebar" id="sidebar">
+        <div class="auth-section" id="authSection">
+            <input type="text" id="twitchNick" placeholder="Twitch ник">
+            <button onclick="startAuth()">Войти</button>
+            <p id="authCodeDisplay">Здесь появится код</p> <!-- ✅ Он должен быть здесь! -->
+        </div>
+        
+        
+        <div class="user-info" id="userInfo" style="display: none;">
+            <p>Баланс: <span id="userBalance">0</span> баллов</p>
+            <button onclick="logout()">Выйти</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
