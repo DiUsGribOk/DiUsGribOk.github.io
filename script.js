@@ -80,22 +80,94 @@ function updateUI() {
 // Проверка авторизации
 async function verifyClientSide() {
     try {
-        // Получаем сохраненный pendingAuth
         const pendingAuth = JSON.parse(localStorage.getItem('pendingAuth'));
         if (!pendingAuth) return;
 
-        // Проверяем авторизацию на сервере
         const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/check_auth?user=${pendingAuth.nick}`);
         const data = await response.json();
 
         if (data.status === 'success') {
-            currentUser = pendingAuth.nick;
-            localStorage.setItem('currentUser', currentUser); // Сохраняем пользователя
-            localStorage.removeItem('pendingAuth'); // Удаляем временные данные
-            updateUI();
+            // Проверяем есть ли пароль
+            const hasPassword = await checkIfHasPassword(pendingAuth.nick);
+            
+            if (!hasPassword) {
+                showPasswordSetup();
+            } else {
+                showPasswordLogin();
+            }
         }
     } catch (error) {
         console.error("Ошибка проверки авторизации:", error);
+    }
+}
+
+async function checkIfHasPassword(nick) {
+    const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/check_auth?user=${nick}`);
+    const data = await response.json();
+    return data.password_hash !== undefined;
+}
+
+function showPasswordSetup() {
+    document.getElementById('passwordSection').style.display = 'block';
+    document.getElementById('setPasswordSection').style.display = 'block';
+    document.getElementById('authSection').style.display = 'none';
+}
+
+function showPasswordLogin() {
+    document.getElementById('passwordSection').style.display = 'block';
+    document.getElementById('setPasswordSection').style.display = 'none';
+    document.getElementById('authSection').style.display = 'none';
+}
+
+async function setPassword() {
+    const newPassword = document.getElementById('newPassword').value;
+    
+    if (newPassword.length < 6) {
+        return alert('Пароль должен быть не менее 6 символов!');
+    }
+
+    try {
+        const response = await fetch('https://GribDiUsOK69.pythonanywhere.com/set_password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                nick: currentUser,
+                password: newPassword
+            })
+        });
+        
+        if (response.ok) {
+            currentUser = pendingAuth.nick;
+            localStorage.setItem('currentUser', currentUser);
+            updateUI();
+        }
+    } catch (error) {
+        console.error('Ошибка установки пароля:', error);
+    }
+}
+
+async function checkPassword() {
+    const password = document.getElementById('passwordInput').value;
+    
+    try {
+        const response = await fetch('https://GribDiUsOK69.pythonanywhere.com/check_password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                nick: currentUser,
+                password: password
+            })
+        });
+        
+        if (response.status === 200) {
+            currentUser = pendingAuth.nick;
+            localStorage.setItem('currentUser', currentUser);
+            updateUI();
+        } else {
+            alert('Неверный пароль!');
+        }
+    } catch (error) {
+        console.error('Ошибка проверки пароля:', error);
     }
 }
 
