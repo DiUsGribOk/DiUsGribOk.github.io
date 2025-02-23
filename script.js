@@ -87,7 +87,8 @@ async function verifyClientSide() {
         const data = await response.json();
 
         if (data.status === 'success') {
-            // Проверяем есть ли пароль
+            currentUser = pendingAuth.nick;
+            localStorage.setItem('currentUser', currentUser);
             const hasPassword = await checkIfHasPassword(pendingAuth.nick);
             
             if (!hasPassword) {
@@ -121,7 +122,13 @@ function showPasswordLogin() {
 
 async function setPassword() {
     const newPassword = document.getElementById('newPassword').value;
+    const pendingAuth = JSON.parse(localStorage.getItem('pendingAuth')); // Добавьте эту строку
     
+    if (!pendingAuth) {
+        alert('Ошибка: сессия авторизации не найдена');
+        return;
+    }
+
     if (newPassword.length < 6) {
         return alert('Пароль должен быть не менее 6 символов!');
     }
@@ -131,7 +138,7 @@ async function setPassword() {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                nick: currentUser,
+                nick: pendingAuth.nick, // Используем ник из pendingAuth
                 password: newPassword
             })
         });
@@ -139,6 +146,7 @@ async function setPassword() {
         if (response.ok) {
             currentUser = pendingAuth.nick;
             localStorage.setItem('currentUser', currentUser);
+            localStorage.removeItem('pendingAuth'); // Очищаем временные данные
             updateUI();
         }
     } catch (error) {
@@ -146,22 +154,27 @@ async function setPassword() {
     }
 }
 
+
 async function checkPassword() {
     const password = document.getElementById('passwordInput').value;
+    const currentUser = localStorage.getItem('currentUser'); // Получаем текущего пользователя
     
+    if (!currentUser) {
+        alert('Сначала выполните вход!');
+        return;
+    }
+
     try {
         const response = await fetch('https://GribDiUsOK69.pythonanywhere.com/check_password', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                nick: currentUser,
+                nick: currentUser, // Используем сохраненного пользователя
                 password: password
             })
         });
         
         if (response.status === 200) {
-            currentUser = pendingAuth.nick;
-            localStorage.setItem('currentUser', currentUser);
             updateUI();
         } else {
             alert('Неверный пароль!');
