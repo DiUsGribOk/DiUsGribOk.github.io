@@ -78,6 +78,33 @@ auth-section input:focus {
     background: #7b5bbf;
 }
 
+.password-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: #292929;
+    border-radius: 8px;
+}
+
+.password-section input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    background: #2d2d2d;
+    color: white;
+    border: none;
+    border-radius: 6px;
+}
+
+.password-section button {
+    background: #6441a5;
+    color: white;
+    padding: 12px;
+    width: 100%;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
 .user-info {
     margin-top: 20px;
     padding: 15px;
