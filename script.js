@@ -75,22 +75,20 @@ async function verifyClientSide() {
         const pendingAuth = JSON.parse(localStorage.getItem('pendingAuth'));
         if (!pendingAuth) return;
 
-        const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/verify_code?nick=${pendingAuth.nick}&code=${pendingAuth.code}`);
+        // Добавьте логирование URL
+        const url = `https://GribDiUsOK69.pythonanywhere.com/verify_code?nick=${encodeURIComponent(pendingAuth.nick)}&code=${encodeURIComponent(pendingAuth.code)}`;
+        console.log("Sending request to:", url);
+
+        const response = await fetch(url);
         const data = await response.json();
+        console.log("Server response:", data); // Логирование ответа
 
         if (data.status === 'success') {
-            // 1. Сохраняем пользователя
             currentUser = pendingAuth.nick;
             localStorage.setItem('currentUser', currentUser);
-            
-            // 2. Удаляем временные данные
             localStorage.removeItem('pendingAuth');
-            
-            // 3. Принудительно обновляем интерфейс
             updateUI();
-            
-            // 4. Перезагружаем страницу для применения изменений
-            window.location.reload();
+            window.location.reload(); // Принудительная перезагрузка
         }
     } catch (error) {
         console.error("Ошибка проверки авторизации:", error);
