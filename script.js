@@ -10,6 +10,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 3000);
 });
 
+function toggleMenu() {  // <-- Исправленная позиция
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('active');
+    }
+}
+
 let currentUser = null;
 let authCode = null;
 
@@ -42,14 +49,7 @@ async function startAuth() {
     }
 }
 
-function toggleMenu() {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) {
-        sidebar.classList.toggle('active');
-    } else {
-        console.error("Элемент #sidebar не найден!");
-    }
-}
+
 
 // Обновление интерфейса
 function updateUI() {
