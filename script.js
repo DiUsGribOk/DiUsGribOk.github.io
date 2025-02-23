@@ -98,6 +98,7 @@ async function verifyClientSide() {
 
 
 async function checkIfHasPassword(nick) {
+    const password = document.getElementById('passwordLoginInput').value;
     try {
         const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/has_password?nick=${nick}`);
         const data = await response.json();
@@ -120,6 +121,7 @@ function showPasswordLogin() {
 }
 
 async function setPassword(event) { // Добавлен параметр event
+    const newPassword = document.getElementById('passwordSetupInput').value;
     event.preventDefault(); // Теперь работает корректно
     
     const newPassword = document.getElementById('newPassword').value;
