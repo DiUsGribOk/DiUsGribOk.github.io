@@ -1,6 +1,7 @@
 // Добавьте этот код в конец обработчика DOMContentLoaded
 document.addEventListener("DOMContentLoaded", () => {
     console.log("[Frontend] Страница загружена, инициализация...");
+    currentUser = localStorage.getItem('currentUser');
     updateUI();
     verifyClientSide();
 
@@ -44,17 +45,23 @@ function toggleMenu() {
 // Обновление интерфейса
 function updateUI() {
     const authSection = document.getElementById('authSection');
-    const passwordSection = document.getElementById('passwordSection');
+    const passwordLoginSection = document.getElementById('passwordLoginSection');
+    const passwordSetupSection = document.getElementById('passwordSetupSection');
     const userInfo = document.getElementById('userInfo');
+
+    if (!authSection || !userInfo) {
+        console.error("Элементы интерфейса не найдены!");
+        return;
+    }
 
     if (currentUser) {
         authSection.style.display = 'none';
-        passwordSection.style.display = 'none';
+        passwordLoginSection.style.display = 'none';
+        passwordSetupSection.style.display = 'none';
         userInfo.style.display = 'block';
         loadBalance();
     } else {
         authSection.style.display = 'block';
-        passwordSection.style.display = 'none';
         userInfo.style.display = 'none';
     }
 }
