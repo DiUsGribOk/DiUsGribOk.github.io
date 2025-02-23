@@ -133,8 +133,8 @@ function showPasswordLogin() {
     document.getElementById('passwordSection').style.display = 'block';
 }
 
-async function setPassword(event) { // <-- Добавлен параметр event
-    event.preventDefault(); // Блокируем перезагрузку страницы
+async function setPassword(event) { // Добавлен параметр event
+    event.preventDefault(); // Теперь работает корректно
     
     const newPassword = document.getElementById('newPassword').value;
     const pendingAuth = JSON.parse(localStorage.getItem('pendingAuth'));
