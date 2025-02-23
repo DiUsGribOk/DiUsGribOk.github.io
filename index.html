@@ -19,17 +19,18 @@
             <p id="authCodeDisplay">Здесь появится код</p>
         </div>
 
-        <!-- Секция пароля -->
-        <div class="password-section" id="passwordSection" style="display: none;">
+        <!-- Секция ввода пароля -->
+        <div class="password-login-section" id="passwordLoginSection" style="display: none;">
             <button onclick="location.reload()">← Назад</button>
-            <input type="password" id="passwordInput" placeholder="Введите пароль">
-            <button onclick="checkPassword()">Войти</button>
-            
-            <!-- Секция установки пароля -->
-            <div id="setPasswordSection">
-                <input type="password" id="newPassword" placeholder="Придумайте пароль">
-                <button onclick="setPassword(event)">Сохранить пароль</button>
-            </div>
+            <input type="password" id="passwordLoginInput" placeholder="Введите пароль">
+            <button onclick="checkPassword()">Подтвердить</button>
+        </div>
+
+        <!-- Секция установки пароля -->
+        <div class="password-setup-section" id="passwordSetupSection" style="display: none;">
+            <button onclick="location.reload()">← Назад</button>
+            <input type="password" id="passwordSetupInput" placeholder="Придумайте пароль">
+            <button onclick="setPassword(event)">Сохранить</button>
         </div>
 
         <!-- Информация пользователя -->
@@ -37,11 +38,7 @@
             <p>Баланс: <span id="userBalance">0</span> баллов</p>
             <button onclick="logout()">Выйти</button>
         </div>
-
-        <div class="password-login-section" id="passwordLoginSection" style="display: none;">
-            <input type="password" id="passwordInput" placeholder="Введите пароль">
-            <button onclick="checkPassword()">Подтвердить</button>
-        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
