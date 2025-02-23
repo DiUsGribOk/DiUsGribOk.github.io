@@ -64,15 +64,18 @@ function toggleMenu() {
 // Обновление интерфейса
 function updateUI() {
     const authSection = document.getElementById('authSection');
+    const passwordSection = document.getElementById('passwordSection');
     const userInfo = document.getElementById('userInfo');
-    const balanceDisplay = document.getElementById('userBalance');
 
     if (currentUser) {
         authSection.style.display = 'none';
+        passwordSection.style.display = 'none';
         userInfo.style.display = 'block';
-        loadBalance(); // Загружаем баланс при каждом обновлении
+        window.location.hash = '#profile'; // Изменяем URL
+        loadBalance();
     } else {
         authSection.style.display = 'block';
+        passwordSection.style.display = 'none';
         userInfo.style.display = 'none';
     }
 }
@@ -87,10 +90,14 @@ async function verifyClientSide() {
         const data = await response.json();
 
         if (data.status === 'success') {
-            currentUser = pendingAuth.nick;
-            localStorage.setItem('currentUser', currentUser);
+            // Проверяем наличие пароля
             const hasPassword = await checkIfHasPassword(pendingAuth.nick);
             
+            // Скрываем все секции перед показом нужной
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('passwordSection').style.display = 'none';
+            document.getElementById('setPasswordSection').style.display = 'none';
+
             if (!hasPassword) {
                 showPasswordSetup();
             } else {
@@ -103,21 +110,24 @@ async function verifyClientSide() {
 }
 
 async function checkIfHasPassword(nick) {
-    const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/check_auth?user=${nick}`);
-    const data = await response.json();
-    return data.password_hash !== undefined;
+    try {
+        const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/check_auth?user=${nick}`);
+        const data = await response.json();
+        return data.user && data.user.password_hash; // Проверяем наличие хэша
+    } catch (error) {
+        return false;
+    }
 }
 
 function showPasswordSetup() {
     document.getElementById('passwordSection').style.display = 'block';
     document.getElementById('setPasswordSection').style.display = 'block';
-    document.getElementById('authSection').style.display = 'none';
+    document.getElementById('newPassword').value = ''; // Очищаем поле
 }
 
 function showPasswordLogin() {
     document.getElementById('passwordSection').style.display = 'block';
-    document.getElementById('setPasswordSection').style.display = 'none';
-    document.getElementById('authSection').style.display = 'none';
+    document.getElementById('passwordInput').value = ''; // Очищаем поле
 }
 
 async function setPassword() {
@@ -175,6 +185,7 @@ async function checkPassword() {
         });
         
         if (response.status === 200) {
+            currentUser = localStorage.getItem('currentUser');
             updateUI();
         } else {
             alert('Неверный пароль!');
