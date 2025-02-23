@@ -69,31 +69,35 @@ function updateUI() {
 // Проверка авторизации
 // Обновите функцию verifyClientSide
 // Обновленная функция verifyClientSide
+// Обновите функцию verifyClientSide в script.js
 async function verifyClientSide() {
     try {
         const pendingAuth = JSON.parse(localStorage.getItem('pendingAuth'));
         if (!pendingAuth) return;
 
-        const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/check_auth?user=${pendingAuth.nick}`);
+        const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/verify_code?nick=${pendingAuth.nick}&code=${pendingAuth.code}`);
         const data = await response.json();
 
         if (data.status === 'success') {
-            // Сохраняем пользователя
+            // 1. Сохраняем пользователя
             currentUser = pendingAuth.nick;
             localStorage.setItem('currentUser', currentUser);
             
-            // Проверяем наличие пароля
-            const hasPassword = await checkIfHasPassword(currentUser);
+            // 2. Удаляем временные данные
+            localStorage.removeItem('pendingAuth');
             
-            // Управление видимостью элементов
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('passwordSection').style.display = 'block';
-            document.getElementById('setPasswordSection').style.display = hasPassword ? 'none' : 'block';
+            // 3. Принудительно обновляем интерфейс
+            updateUI();
+            
+            // 4. Перезагружаем страницу для применения изменений
+            window.location.reload();
         }
     } catch (error) {
         console.error("Ошибка проверки авторизации:", error);
     }
 }
+
+
 
 async function checkIfHasPassword(nick) {
     try {
