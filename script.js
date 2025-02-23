@@ -73,28 +73,31 @@ function updateUI() {
 // Обновите функцию verifyClientSide
 // Обновленная функция verifyClientSide
 // Обновите функцию verifyClientSide в script.js
+// Модифицированная функция verifyClientSide
 async function verifyClientSide() {
     try {
         const pendingAuth = JSON.parse(localStorage.getItem('pendingAuth'));
         if (!pendingAuth) return;
 
-        // Добавьте логирование URL
-        const url = `https://GribDiUsOK69.pythonanywhere.com/verify_code?nick=${encodeURIComponent(pendingAuth.nick)}&code=${encodeURIComponent(pendingAuth.code)}`;
-        console.log("Sending request to:", url);
-
-        const response = await fetch(url);
+        const response = await fetch(
+            `https://GribDiUsOK69.pythonanywhere.com/verify_code?nick=${encodeURIComponent(pendingAuth.nick)}&code=${encodeURIComponent(pendingAuth.code)}`
+        );
+        
         const data = await response.json();
-        console.log("Server response:", data); // Логирование ответа
+        console.log("Ответ сервера:", data);
 
         if (data.status === 'success') {
+            // Обновляем интерфейс
             currentUser = pendingAuth.nick;
             localStorage.setItem('currentUser', currentUser);
             localStorage.removeItem('pendingAuth');
-            updateUI();
-            window.location.reload(); // Принудительная перезагрузка
+            
+            // Принудительное обновление
+            window.location.href = window.location.href;
         }
     } catch (error) {
-        console.error("Ошибка проверки авторизации:", error);
+        console.error("Ошибка:", error);
+        alert("Ошибка соединения с сервером");
     }
 }
 
