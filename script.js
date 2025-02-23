@@ -39,7 +39,12 @@ async function startAuth() {
 // Открыть/закрыть меню
 function toggleMenu() {
     const sidebar = document.getElementById('sidebar');
-    if (sidebar) sidebar.classList.toggle('active');
+    if (sidebar) {
+        sidebar.classList.toggle('active');
+        console.log("Меню переключено"); // Для отладки
+    } else {
+        console.error("Не могу найти элемент меню");
+    }
 }
 
 // Обновление интерфейса
