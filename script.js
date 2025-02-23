@@ -15,43 +15,33 @@ let authCode = null;
 
 // Генерация кода
 async function startAuth() {
-    console.log("[Frontend] Начало авторизации...");
-
     const twitchNickInput = document.getElementById('twitchNick');
-    const authCodeDisplay = document.getElementById('authCodeDisplay');
-
-    if (!twitchNickInput) {
-        console.error("Ошибка: элемент #twitchNick не найден! Проверь HTML.");
-        return;
-    }
-
-    if (!authCodeDisplay) {
-        console.error("Ошибка: элемент #authCodeDisplay не найден! Проверь HTML.");
-        return;
-    }
-
     const twitchNick = twitchNickInput.value.trim().toLowerCase();
+    
     if (!twitchNick) return alert('Введите ник!');
 
-    authCode = Math.floor(100000 + Math.random() * 900000);
-    authCodeDisplay.textContent = `Введите в чат Twitch: !подтвердить ${authCode}`;
-
-    try {
-        const response = await fetch("https://GribDiUsOK69.pythonanywhere.com/generate_code", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nick: twitchNick, code: authCode })
-        });
-
-        const data = await response.json();
-        if (data.status === 'ok') {
+    // Проверяем наличие пароля
+    const hasPassword = await checkIfHasPassword(twitchNick);
+    
+    if (hasPassword) {
+        // Если пароль есть - сразу запрашиваем ввод
+        showPasswordLogin();
+        localStorage.setItem('pendingAuth', JSON.stringify({ nick: twitchNick }));
+    } else {
+        // Стандартный процесс с кодом подтверждения
+        authCode = Math.floor(100000 + Math.random() * 900000);
+        document.getElementById('authCodeDisplay').textContent = `Введите в чат Twitch: !подтвердить ${authCode}`;
+        
+        try {
+            await fetch("https://GribDiUsOK69.pythonanywhere.com/generate_code", {
+                method: "POST",
+                body: JSON.stringify({ nick: twitchNick, code: authCode })
+            });
+            
             localStorage.setItem('pendingAuth', JSON.stringify({ nick: twitchNick, code: authCode }));
-            console.log("[Frontend] Код успешно отправлен!");
-        } else {
-            alert("Ошибка при генерации кода!");
+        } catch (error) {
+            console.error("Ошибка:", error);
         }
-    } catch (error) {
-        console.error("Ошибка:", error);
     }
 }
 
@@ -110,9 +100,9 @@ async function verifyClientSide() {
 
 async function checkIfHasPassword(nick) {
     try {
-        const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/check_auth?user=${nick}`);
+        const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/has_password?nick=${nick}`);
         const data = await response.json();
-        return data.user?.password_hash !== undefined; // Проверяем наличие пароля
+        return data.has_password;
     } catch (error) {
         return false;
     }
@@ -125,8 +115,9 @@ function showPasswordSetup() {
 }
 
 function showPasswordLogin() {
-    document.getElementById('passwordInput').value = ''; // Очищаем при каждом показе
-    document.getElementById('passwordSection').style.display = 'block';
+    document.getElementById('authSection').style.display = 'none';
+    document.getElementById('passwordLoginSection').style.display = 'block';
+    document.getElementById('authCodeDisplay').style.display = 'none';
 }
 
 async function setPassword(event) { // Добавлен параметр event
