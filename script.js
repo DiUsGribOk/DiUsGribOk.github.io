@@ -5,7 +5,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateUI();
     verifyClientSide();
 
-    // Проверяем авторизацию каждые 3 секунды
     setInterval(() => {
         verifyClientSide();
     }, 3000);
@@ -14,12 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
 let currentUser = null;
 let authCode = null;
 
+
 // Генерация кода
 async function startAuth() {
     const nick = document.getElementById('twitchNick').value.trim();
     if (!nick) return alert('Введите ник!');
 
-    authCode = Math.floor(100000 + Math.random() * 900000).toString(); // Генерируем как строку
+    authCode = Math.floor(100000 + Math.random() * 900000).toString();
     
     try {
         const response = await fetch('https://GribDiUsOK69.pythonanywhere.com/generate_code', {
@@ -36,14 +36,12 @@ async function startAuth() {
     }
 }
 
-// Открыть/закрыть меню
 function toggleMenu() {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
         sidebar.classList.toggle('active');
-        console.log("Меню переключено"); // Для отладки
     } else {
-        console.error("Не могу найти элемент меню");
+        console.error("Элемент #sidebar не найден!");
     }
 }
 
@@ -125,11 +123,9 @@ function showPasswordLogin() {
     document.getElementById('authCodeDisplay').style.display = 'none';
 }
 
-async function setPassword(event) { // Добавлен параметр event
+async function setPassword(event) { 
+    event.preventDefault(); 
     const newPassword = document.getElementById('passwordSetupInput').value;
-    event.preventDefault(); // Теперь работает корректно
-    
-    const newPassword = document.getElementById('newPassword').value;
     const pendingAuth = JSON.parse(localStorage.getItem('pendingAuth'));
     
     if (!pendingAuth) {
