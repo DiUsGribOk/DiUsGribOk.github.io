@@ -81,6 +81,7 @@ function updateUI() {
 
 // Проверка авторизации
 // Обновите функцию verifyClientSide
+// Обновленная функция verifyClientSide
 async function verifyClientSide() {
     try {
         const pendingAuth = JSON.parse(localStorage.getItem('pendingAuth'));
@@ -90,22 +91,17 @@ async function verifyClientSide() {
         const data = await response.json();
 
         if (data.status === 'success') {
-            const hasPassword = await checkIfHasPassword(pendingAuth.nick);
+            // Сохраняем пользователя
+            currentUser = pendingAuth.nick;
+            localStorage.setItem('currentUser', currentUser);
             
-            // Скрываем все элементы
+            // Проверяем наличие пароля
+            const hasPassword = await checkIfHasPassword(currentUser);
+            
+            // Управление видимостью элементов
             document.getElementById('authSection').style.display = 'none';
-            document.getElementById('passwordSection').style.display = 'none';
-            document.getElementById('setPasswordSection').style.display = 'none';
-
-            // Показываем только нужное
-            if (hasPassword) {
-                document.getElementById('passwordInput').value = ''; // Очищаем поле
-                document.getElementById('passwordSection').style.display = 'block';
-            } else {
-                document.getElementById('newPassword').value = ''; // Очищаем поле
-                document.getElementById('passwordSection').style.display = 'block';
-                document.getElementById('setPasswordSection').style.display = 'block';
-            }
+            document.getElementById('passwordSection').style.display = 'block';
+            document.getElementById('setPasswordSection').style.display = hasPassword ? 'none' : 'block';
         }
     } catch (error) {
         console.error("Ошибка проверки авторизации:", error);
@@ -116,7 +112,7 @@ async function checkIfHasPassword(nick) {
     try {
         const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/check_auth?user=${nick}`);
         const data = await response.json();
-        return data.user && data.user.password_hash; // Проверяем наличие хэша
+        return data.user?.password_hash !== undefined; // Проверяем наличие пароля
     } catch (error) {
         return false;
     }
@@ -172,10 +168,12 @@ async function setPassword(event) { // Добавлен параметр event
 
 async function checkPassword() {
     const password = document.getElementById('passwordInput').value;
-    let currentUser = localStorage.getItem('currentUser'); // <-- Исправлено
+    const currentUser = localStorage.getItem('currentUser'); // Получаем из localStorage
     
     if (!currentUser) {
-        alert('Сначала выполните вход!');
+        // Если пользователь не найден, перенаправляем на начальный экран
+        localStorage.removeItem('pendingAuth');
+        window.location.reload();
         return;
     }
 
@@ -184,14 +182,13 @@ async function checkPassword() {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                nick: currentUser,
+                nick: currentUser, // Используем сохраненного пользователя
                 password: password
             })
         });
         
         if (response.status === 200) {
-            currentUser = pendingAuth.nick; // Теперь ошибки не будет
-            updateUI();
+            updateUI(); // Обновляем интерфейс
         } else {
             alert('Неверный пароль!');
         }
@@ -218,6 +215,8 @@ async function loadBalance() {
 // Выход
 function logout() {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('pendingAuth');
     currentUser = null;
     updateUI();
+    window.location.reload(); // Обновляем страницу
 }
