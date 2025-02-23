@@ -12,13 +12,26 @@
 
     <!-- Боковое меню -->
     <div class="sidebar" id="sidebar">
+        <!-- Секция авторизации -->
         <div class="auth-section" id="authSection">
             <input type="text" id="twitchNick" placeholder="Twitch ник">
             <button onclick="startAuth()">Войти</button>
-            <p id="authCodeDisplay">Здесь появится код</p> <!-- ✅ Он должен быть здесь! -->
+            <p id="authCodeDisplay">Здесь появится код</p>
         </div>
-        
-        
+
+        <!-- Секция пароля -->
+        <div class="password-section" id="passwordSection" style="display: none;">
+            <input type="password" id="passwordInput" placeholder="Введите пароль">
+            <button onclick="checkPassword()">Войти</button>
+            
+            <!-- Секция установки пароля -->
+            <div id="setPasswordSection">
+                <input type="password" id="newPassword" placeholder="Придумайте пароль">
+                <button onclick="setPassword()">Сохранить пароль</button>
+            </div>
+        </div>
+
+        <!-- Информация пользователя -->
         <div class="user-info" id="userInfo" style="display: none;">
             <p>Баланс: <span id="userBalance">0</span> баллов</p>
             <button onclick="logout()">Выйти</button>
