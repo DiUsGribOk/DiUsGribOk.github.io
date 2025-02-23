@@ -29,6 +29,12 @@ async function startAuth() {
         });
         
         if (response.ok) {
+            // Сохраняем данные для верификации
+            localStorage.setItem('pendingAuth', JSON.stringify({
+                nick: nick,
+                code: authCode
+            }));
+            
             document.getElementById('authCodeDisplay').textContent = `Код: ${authCode}`;
         }
     } catch (error) {
@@ -70,7 +76,7 @@ function updateUI() {
 // Обновленная функция verifyClientSide
 // Обновите функцию verifyClientSide в script.js
 // Модифицированная функция verifyClientSide
-async function verifyClientSide() {
+sync function verifyClientSide() {
     try {
         const pendingAuth = JSON.parse(localStorage.getItem('pendingAuth'));
         if (!pendingAuth) return;
@@ -82,23 +88,16 @@ async function verifyClientSide() {
         const data = await response.json();
         console.log("Ответ сервера:", data);
 
-        // В функции verifyClientSide
         if (data.status === 'success') {
-            currentUser = pendingAuth.nick;
-            localStorage.setItem('currentUser', currentUser);
+            // Явно сохраняем пользователя
+            localStorage.setItem('currentUser', pendingAuth.nick);
             localStorage.removeItem('pendingAuth');
-    
-            // Принудительно обновляем все элементы
-            updateUI();
-    
-            // Добавьте задержку для надёжности
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
+            
+            // Принудительное обновление
+            window.location.href = window.location.href + '?forceReload=' + Date.now();
         }
     } catch (error) {
         console.error("Ошибка:", error);
-        alert("Ошибка соединения с сервером");
     }
 }
 
