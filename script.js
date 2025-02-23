@@ -52,20 +52,16 @@ function updateUI() {
     const passwordSetupSection = document.getElementById('passwordSetupSection');
     const userInfo = document.getElementById('userInfo');
 
-    if (!authSection || !userInfo) {
-        console.error("Элементы интерфейса не найдены!");
-        return;
-    }
+    // Всегда сбрасываем стили
+    [authSection, passwordLoginSection, passwordSetupSection, userInfo].forEach(el => {
+        if (el) el.style.display = 'none';
+    });
 
     if (currentUser) {
-        authSection.style.display = 'none';
-        passwordLoginSection.style.display = 'none';
-        passwordSetupSection.style.display = 'none';
         userInfo.style.display = 'block';
         loadBalance();
     } else {
         authSection.style.display = 'block';
-        userInfo.style.display = 'none';
     }
 }
 
@@ -86,14 +82,19 @@ async function verifyClientSide() {
         const data = await response.json();
         console.log("Ответ сервера:", data);
 
+        // В функции verifyClientSide
         if (data.status === 'success') {
-            // Обновляем интерфейс
             currentUser = pendingAuth.nick;
             localStorage.setItem('currentUser', currentUser);
             localStorage.removeItem('pendingAuth');
-            
-            // Принудительное обновление
-            window.location.href = window.location.href;
+    
+            // Принудительно обновляем все элементы
+            updateUI();
+    
+            // Добавьте задержку для надёжности
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         }
     } catch (error) {
         console.error("Ошибка:", error);
