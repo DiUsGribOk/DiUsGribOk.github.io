@@ -37,7 +37,7 @@ async function startAuth() {
     authCodeDisplay.textContent = `Введите в чат Twitch: !подтвердить ${authCode}`;
 
     try {
-        const response = await fetch("http://176.119.197.148:5000/generate_code", {
+        const response = await fetch("https://GribDiUsOK69.pythonanywhere.com/generate_code", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ nick: twitchNick, code: authCode })
@@ -85,7 +85,7 @@ async function verifyClientSide() {
         if (!pendingAuth) return;
 
         // Проверяем авторизацию на сервере
-        const response = await fetch(`http://176.119.197.148:5000/check_auth?user=${pendingAuth.nick}`);
+        const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/check_auth?user=${pendingAuth.nick}`);
         const data = await response.json();
 
         if (data.status === 'success') {
@@ -102,7 +102,7 @@ async function verifyClientSide() {
 // Запрос баланса
 async function loadBalance() {
     try {
-        const response = await fetch(`http://176.119.197.148:5000/get_balance?user=${currentUser}`);
+        const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/get_balance?user=${currentUser}`);
         const data = await response.json();
         
         const balanceDisplay = document.getElementById('userBalance');
