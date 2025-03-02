@@ -134,9 +134,16 @@ async function checkIfHasPassword(nick) {
 }
 
 function showPasswordSetup() {
-    document.getElementById('passwordSetupInput').value = ''; // Исправлено: 'passwordSetupInput' вместо 'newPassword'
-    document.getElementById('passwordSection').style.display = 'block';
-    document.getElementById('passwordSetupSection').style.display = 'block';
+    const passwordSection = document.getElementById('passwordSection');
+    const setupSection = document.getElementById('passwordSetupSection');
+    
+    if (passwordSection && setupSection) {
+        document.getElementById('passwordSetupInput').value = '';
+        passwordSection.style.display = 'block';
+        setupSection.style.display = 'block';
+    } else {
+        console.error('Элементы passwordSection или passwordSetupSection не найдены!');
+    }
 }
 
 function showPasswordLogin() {
