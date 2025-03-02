@@ -23,9 +23,11 @@
             <button onclick="checkPassword()">Подтвердить</button>
         </div>
 
-        <div class="password-setup-section" id="passwordSetupSection" style="display: none;">
-            <input type="password" id="passwordSetupInput" placeholder="Придумайте пароль">
-            <button onclick="setPassword(event)">Сохранить</button>
+        <div class="password-section" id="passwordSection" style="display: none;">
+            <div class="password-setup-section" id="passwordSetupSection">
+                <input type="password" id="passwordSetupInput" placeholder="Пароль (минимум 6 символов)">
+                <button onclick="setPassword(event)">Сохранить</button>
+            </div>
         </div>
 
         <div class="user-info" id="userInfo" style="display: none;">
@@ -34,6 +36,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=4"></script>
+    <script src="script.js?v=5"></script>
 </body>
 </html>
