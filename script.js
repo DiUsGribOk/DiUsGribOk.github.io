@@ -8,9 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(() => {
         verifyClientSide();
     }, 3000);
-});
+}); 
 
-function toggleMenu() {  // <-- Исправленная позиция
+function toggleMenu() {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
         sidebar.classList.toggle('active');
