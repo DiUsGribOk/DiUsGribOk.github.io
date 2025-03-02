@@ -1,7 +1,6 @@
 let currentUser = null;
 let authCode = null;
 
-// Добавьте этот код в конец обработчика DOMContentLoaded
 document.addEventListener("DOMContentLoaded", () => {
     console.log("[Frontend] Страница загружена, инициализация...");
     currentUser = localStorage.getItem('currentUser');
@@ -11,15 +10,15 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(() => {
         verifyClientSide();
     }, 3000);
-}); 
+}); // <-- Закрывающая скобка обработчика DOMContentLoaded
 
+// Функция объявлена ГЛОБАЛЬНО
 function toggleMenu() {
     const sidebar = document.getElementById('sidebar');
     if (sidebar) {
         sidebar.classList.toggle('active');
     }
 }
-
 
 
 
