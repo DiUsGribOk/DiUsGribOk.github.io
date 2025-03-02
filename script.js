@@ -27,6 +27,17 @@ async function startAuth() {
     const nick = document.getElementById('twitchNick').value.trim();
     if (!nick) return alert('Введите ник!');
 
+    // Проверяем, есть ли у пользователя пароль
+    const hasPassword = await checkIfHasPassword(nick);
+    
+    if (hasPassword) {
+        // Показываем форму ввода пароля
+        showPasswordLogin();
+        localStorage.setItem('pendingAuthNick', nick);
+        return;
+    }
+
+    // Продолжаем генерацию кода для новых пользователей
     authCode = Math.floor(100000 + Math.random() * 900000).toString();
     
     try {
@@ -37,12 +48,7 @@ async function startAuth() {
         });
         
         if (response.ok) {
-            // Сохраняем данные для верификации
-            localStorage.setItem('pendingAuth', JSON.stringify({
-                nick: nick,
-                code: authCode
-            }));
-            
+            localStorage.setItem('pendingAuth', JSON.stringify({ nick, code: authCode }));
             document.getElementById('authCodeDisplay').textContent = `Код: ${authCode}`;
         }
     } catch (error) {
@@ -59,12 +65,14 @@ function updateUI() {
     const passwordSetupSection = document.getElementById('passwordSetupSection');
     const userInfo = document.getElementById('userInfo');
 
-    // Всегда сбрасываем стили
     [authSection, passwordLoginSection, passwordSetupSection, userInfo].forEach(el => {
         if (el) el.style.display = 'none';
     });
 
-    if (currentUser) {
+    if (localStorage.getItem('tempUser')) {
+        passwordSetupSection.style.display = 'block';
+    } 
+    else if (currentUser) {
         userInfo.style.display = 'block';
         loadBalance();
     } else {
@@ -87,15 +95,23 @@ async function verifyClientSide() {
         );
         
         const data = await response.json();
-        console.log("Ответ сервера:", data);
-
+        
         if (data.status === 'success') {
-            // Явно сохраняем пользователя
-            localStorage.setItem('currentUser', pendingAuth.nick);
-            localStorage.removeItem('pendingAuth');
+            // Проверяем, есть ли у пользователя пароль
+            const hasPassword = await checkIfHasPassword(pendingAuth.nick);
             
-            // Принудительное обновление
-            window.location.href = window.location.href + '?forceReload=' + Date.now();
+            if (!hasPassword) {
+                // Показываем форму установки пароля
+                showPasswordSetup();
+                // Сохраняем пользователя как "незавершенную регистрацию"
+                localStorage.setItem('tempUser', pendingAuth.nick);
+                localStorage.removeItem('pendingAuth');
+            } else {
+                // Стандартный вход
+                localStorage.setItem('currentUser', pendingAuth.nick);
+                localStorage.removeItem('pendingAuth');
+                window.location.reload();
+            }
         }
     } catch (error) {
         console.error("Ошибка:", error);
@@ -105,12 +121,14 @@ async function verifyClientSide() {
 
 
 async function checkIfHasPassword(nick) {
-    const password = document.getElementById('passwordLoginInput').value;
     try {
-        const response = await fetch(`https://GribDiUsOK69.pythonanywhere.com/has_password?nick=${nick}`);
+        const response = await fetch(
+            `https://GribDiUsOK69.pythonanywhere.com/check_registration?nick=${encodeURIComponent(nick)}`
+        );
         const data = await response.json();
-        return data.has_password;
+        return data.registered;
     } catch (error) {
+        console.error('Ошибка проверки пароля:', error);
         return false;
     }
 }
@@ -130,10 +148,10 @@ function showPasswordLogin() {
 async function setPassword(event) { 
     event.preventDefault(); 
     const newPassword = document.getElementById('passwordSetupInput').value;
-    const pendingAuth = JSON.parse(localStorage.getItem('pendingAuth'));
+    const tempUser = localStorage.getItem('tempUser');
     
-    if (!pendingAuth) {
-        alert('Ошибка: сессия авторизации не найдена');
+    if (!tempUser) {
+        alert('Ошибка сессии');
         return;
     }
 
@@ -146,15 +164,14 @@ async function setPassword(event) {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                nick: pendingAuth.nick,
+                nick: tempUser,
                 password: newPassword
             })
         });
         
         if (response.ok) {
-            currentUser = pendingAuth.nick;
-            localStorage.setItem('currentUser', currentUser);
-            localStorage.removeItem('pendingAuth');
+            localStorage.setItem('currentUser', tempUser);
+            localStorage.removeItem('tempUser');
             updateUI();
         }
     } catch (error) {
