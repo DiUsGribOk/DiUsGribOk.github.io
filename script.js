@@ -77,7 +77,7 @@ function updateUI() {
 // Обновленная функция verifyClientSide
 // Обновите функцию verifyClientSide в script.js
 // Модифицированная функция verifyClientSide
-sync function verifyClientSide() {
+async function verifyClientSide() {
     try {
         const pendingAuth = JSON.parse(localStorage.getItem('pendingAuth'));
         if (!pendingAuth) return;
