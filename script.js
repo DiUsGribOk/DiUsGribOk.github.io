@@ -134,9 +134,9 @@ async function checkIfHasPassword(nick) {
 }
 
 function showPasswordSetup() {
-    document.getElementById('newPassword').value = ''; // Очищаем при каждом показе
+    document.getElementById('passwordSetupInput').value = ''; // Исправлено: 'passwordSetupInput' вместо 'newPassword'
     document.getElementById('passwordSection').style.display = 'block';
-    document.getElementById('setPasswordSection').style.display = 'block';
+    document.getElementById('passwordSetupSection').style.display = 'block';
 }
 
 function showPasswordLogin() {
