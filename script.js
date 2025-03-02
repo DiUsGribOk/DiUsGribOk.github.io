@@ -1,3 +1,6 @@
+let currentUser = null;
+let authCode = null;
+
 // Добавьте этот код в конец обработчика DOMContentLoaded
 document.addEventListener("DOMContentLoaded", () => {
     console.log("[Frontend] Страница загружена, инициализация...");
@@ -17,8 +20,7 @@ function toggleMenu() {
     }
 }
 
-let currentUser = null;
-let authCode = null;
+
 
 
 // Генерация кода
