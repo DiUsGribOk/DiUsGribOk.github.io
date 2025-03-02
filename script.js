@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(() => {
         verifyClientSide();
     }, 3000);
-}); // <-- Закрывающая скобка обработчика DOMContentLoaded
+});
 
 // Функция объявлена ГЛОБАЛЬНО
 function toggleMenu() {
@@ -94,24 +94,21 @@ async function verifyClientSide() {
             `https://GribDiUsOK69.pythonanywhere.com/verify_code?nick=${encodeURIComponent(pendingAuth.nick)}&code=${encodeURIComponent(pendingAuth.code)}`
         );
         
+        if (!response.ok) {
+            console.error("Ошибка HTTP:", response.status);
+            return;
+        }
+
         const data = await response.json();
-        
+        console.log("Ответ сервера:", data);
+
         if (data.status === 'success') {
-            // Проверяем, есть ли у пользователя пароль
             const hasPassword = await checkIfHasPassword(pendingAuth.nick);
-            
             if (!hasPassword) {
-                // Показываем форму установки пароля
                 showPasswordSetup();
-                // Сохраняем пользователя как "незавершенную регистрацию"
                 localStorage.setItem('tempUser', pendingAuth.nick);
-                localStorage.removeItem('pendingAuth');
-            } else {
-                // Стандартный вход
-                localStorage.setItem('currentUser', pendingAuth.nick);
-                localStorage.removeItem('pendingAuth');
-                window.location.reload();
             }
+            localStorage.removeItem('pendingAuth');
         }
     } catch (error) {
         console.error("Ошибка:", error);
